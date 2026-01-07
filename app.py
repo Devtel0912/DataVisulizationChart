@@ -11,8 +11,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 def serve_index():
-    index_file = os.path.join("static", "index.html")
-    with open(index_file, "r", encoding="utf-8") as file:
+    with open("static/index.html", "r", encoding="utf-8") as file:
         return file.read()
     
 data = {
