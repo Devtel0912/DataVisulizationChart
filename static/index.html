@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visulizer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+    <style>
+        h1{
+            color: gold;
+        }
+
+        .chart-container{
+            display: flex;
+            height: 32rem;
+            gap: 1rem;
+        }
+
+        .chart-item{
+            flex: 1;
+        }
+
+
+        #main{
+            background-color: rgb(198, 135, 26);
+
+        }
+
+        #aux{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>DCharts App</h1>
+        <section class="chart-container">
+            <div id="main" class="chart-item">Main Chart</div>
+            <div id="aux"  class="chart-item">Aux Chart</div>
+            <div></div>
+            <div></div>
+        </section>
+
+
+    </main>
+    <script>
+    const mainTag = document.getElementById('main')
+    const auxTag = document.getElementById('aux')
+
+    const mainChart = echarts.init(mainTag)
+    const auxChart = echarts.init(auxTag)
+
+    const option = {
+        xAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {},
+        series: [{
+            name: 'Money Earned',
+            type: 'bar',
+            data: [120, 200, 150, 80, 70, 110, 130]
+        }]
+    }
+
+    mainChart.setOption(option)
+
+    mainChart.on('mouseover', function (params) {
+        if (params.componentType === 'series') {
+            fetch(`http://127.0.0.1:8000/data/${params.name}`)
+                .then(res => res.json())
+                .then(data => {
+                    const pieOption = {
+                        title: {
+                            text: `Details for ${params.name}`,
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item'
+                        },
+                        series: [{
+                            type: 'pie',
+                            radius: '60%',
+                            data: [
+                                { value: data.online, name: 'Online' },
+                                { value: data.offline, name: 'Offline' }
+                            ]
+                        }]
+                    }
+
+                    auxChart.setOption(pieOption)
+                })
+        }
+    })
+</script>
+
+
+
+</body>
+</html>
